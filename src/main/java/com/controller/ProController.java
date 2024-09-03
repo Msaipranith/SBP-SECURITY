@@ -47,7 +47,7 @@ public class ProController {
 	public List<UsersPojo> fetchEmpList() {
 
 		List<UsersPojo> op = empService.fetchEmpList();
-		System.out.println( "AFTER EXECUTION " );
+		System.out.println("AFTER EXECUTION ");
 		return op;
 	}
 
