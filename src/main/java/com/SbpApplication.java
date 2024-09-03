@@ -11,11 +11,10 @@ import com.controller.ProController;
 import com.dto.UsersPojo;
 
 @SpringBootApplication
-public class SbpApplication implements CommandLineRunner{
-	
+public class SbpApplication implements CommandLineRunner {
+
 	@Autowired
 	ProController controller;
-	
 
 	public static void main(String[] args) {
 		SpringApplication.run(SbpApplication.class, args);
@@ -24,19 +23,17 @@ public class SbpApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
-		
-			
+
 //			String url="http://localhost:2222/employee/findAllEmp";
 //			
 //			RestTemplate restTemplate=new RestTemplate();
 //			ResponseEntity<String> op = restTemplate.getForEntity(url, String.class);
 //		System.out.println(op);
-		
-controller.saveEmp(new UsersPojo(1, "pranith", "Pranith@0418"));
-controller.saveEmp(new UsersPojo(2, "sai", "Sai@0418"));
-controller.saveEmp(new UsersPojo(3, "saipranith", "SaiPranith@0418"));
-//welcome to git
-		
+
+		controller.saveEmp(new UsersPojo(1, "pranith", "Pranith@0418"));
+		controller.saveEmp(new UsersPojo(2, "sai", "Sai@0418"));
+		controller.saveEmp(new UsersPojo(3, "saipranith", "SaiPranith@0418"));
+
 	}
 
 }

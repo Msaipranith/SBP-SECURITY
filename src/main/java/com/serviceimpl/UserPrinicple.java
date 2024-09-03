@@ -3,7 +3,6 @@ package com.serviceimpl;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,29 +10,19 @@ import org.springframework.stereotype.Service;
 
 import com.entity.Users;
 
-
 @Service
 public class UserPrinicple implements UserDetails {
-	
-	
+
 	private Users user;
-	
-	
-	
-	
 
 	public UserPrinicple() {
 		super();
 	}
 
-
-
 	public UserPrinicple(Users user) {
 		// TODO Auto-generated constructor stub
-		this.user=user;
+		this.user = user;
 	}
-
-
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

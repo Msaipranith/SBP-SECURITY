@@ -20,5 +20,5 @@ public class Address {
 	private String addType;
 	private String state;
 	private String city;
-	
+
 }

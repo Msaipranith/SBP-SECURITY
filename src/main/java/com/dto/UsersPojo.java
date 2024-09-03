@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +12,6 @@ public class UsersPojo {
 
 	private String username;
 	private String password;
-	//private List<Address> address;
-	
+	// private List<Address> address;
 
 }

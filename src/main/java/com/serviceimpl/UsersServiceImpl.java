@@ -19,9 +19,8 @@ public class UsersServiceImpl implements UsersService {
 
 	@Autowired
 	UsersRepo empRepo;
-	
-	
-	private BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
+
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 	@Override
 	public void saveEmp(UsersPojo empPojo) {
@@ -29,7 +28,7 @@ public class UsersServiceImpl implements UsersService {
 
 		Users emp = new Users();
 		BeanUtils.copyProperties(empPojo, emp);
-		//System.out.println(empPojo);
+		// System.out.println(empPojo);
 //		System.out.println();
 
 		emp.setPassword(encoder.encode(empPojo.getPassword()));
@@ -98,7 +97,7 @@ public class UsersServiceImpl implements UsersService {
 			emp.setId(id);
 			emp.setPassword(empPojo.getPassword());
 			emp.setUsername(empPojo.getUsername());
-	
+
 			// emp.setAddress(empPojo.getAddress());
 
 		}

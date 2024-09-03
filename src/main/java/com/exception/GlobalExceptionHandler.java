@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 		ExceptionResponse er = new ExceptionResponse();
 		er.setTimestamp(LocalDateTime.now());
 		er.setStatus(HttpStatusCode.valueOf(404));
-		//er.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
+		// er.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
 		er.setMessage(ex.getMessage());
 		er.setPath(request.getRequestURI());
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users  {
+public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -20,10 +20,9 @@ public class Users  {
 
 	private String username;
 	private String password;
-	
+
 //	@OneToMany(cascade = CascadeType.ALL)
 //	@JoinColumn(name = "id")
 //	private List<Address> address;
 
-	
 }

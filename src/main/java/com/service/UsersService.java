@@ -12,14 +12,10 @@ public interface UsersService {
 
 	UsersPojo fetchEmpByIdByPV(int id);
 
-
-
 	UsersPojo fetchEmpByIdByRP(int id);
 
 	void deleteById(int id);
 
 	void updateEmpById(UsersPojo empPojo, int id);
-
-	
 
 }

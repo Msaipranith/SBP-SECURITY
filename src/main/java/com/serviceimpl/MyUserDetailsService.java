@@ -15,14 +15,14 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	UsersRepo empRepo;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// TODO Auto-generated method stub
-		Users user=empRepo.findByUsername(username);
-		if (user==null) {
-		System.out.println("user not found");	 
-		throw new UserNotFoundException("User Not Found");
+		Users user = empRepo.findByUsername(username);
+		if (user == null) {
+			System.out.println("user not found");
+			throw new UserNotFoundException("User Not Found");
 		}
 		return new UserPrinicple(user);
 	}
