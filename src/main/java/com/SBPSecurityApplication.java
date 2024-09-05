@@ -11,13 +11,13 @@ import com.controller.ProController;
 import com.dto.UsersPojo;
 
 @SpringBootApplication
-public class SbpApplication implements CommandLineRunner {
+public class SBPSecurityApplication implements CommandLineRunner {
 
 	@Autowired
 	ProController controller;
 
 	public static void main(String[] args) {
-		SpringApplication.run(SbpApplication.class, args);
+		SpringApplication.run(SBPSecurityApplication.class, args);
 	}
 
 	@Override
