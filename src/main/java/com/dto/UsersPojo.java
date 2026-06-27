@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsersPojo {
-	private int id;
 
+	private int id;
 	private String username;
 	private String password;
+	private String role;
 	// private List<Address> address;
 
 }

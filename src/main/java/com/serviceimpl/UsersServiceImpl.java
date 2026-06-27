@@ -11,20 +11,20 @@ import com.entity.Users;
 import com.repo.UsersRepo;
 import com.service.UsersService;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Component
 public class UsersServiceImpl implements UsersService {
 
 	@Autowired
 	UsersRepo empRepo;
 
-
-
-	@Override
+	@Autowired
+	PasswordEncoder passwordEncoder;	@Override
 	public void saveEmp(UsersPojo empPojo) {
-		// TODO Auto-generated method stub
-
 		Users emp = new Users();
 		BeanUtils.copyProperties(empPojo, emp);
+		emp.setPassword(passwordEncoder.encode(empPojo.getPassword()));
 		System.out.println(emp);
 		empRepo.save(emp);
 
@@ -88,8 +88,11 @@ public class UsersServiceImpl implements UsersService {
 		if (emp != null) {
 
 			emp.setId(id);
-			emp.setPassword(empPojo.getPassword());
+			emp.setPassword(passwordEncoder.encode(empPojo.getPassword()));
 			emp.setUsername(empPojo.getUsername());
+			if (empPojo.getRole() != null) {
+				emp.setRole(empPojo.getRole());
+			}
 
 		}
 		empRepo.save(emp);
