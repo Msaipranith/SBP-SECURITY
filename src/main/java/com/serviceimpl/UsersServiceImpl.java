@@ -3,12 +3,9 @@ package com.serviceimpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import com.dto.UsersPojo;
 import com.entity.Users;
 import com.repo.UsersRepo;
@@ -20,7 +17,7 @@ public class UsersServiceImpl implements UsersService {
 	@Autowired
 	UsersRepo empRepo;
 
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
 
 	@Override
 	public void saveEmp(UsersPojo empPojo) {
@@ -28,10 +25,6 @@ public class UsersServiceImpl implements UsersService {
 
 		Users emp = new Users();
 		BeanUtils.copyProperties(empPojo, emp);
-		// System.out.println(empPojo);
-//		System.out.println();
-
-		emp.setPassword(encoder.encode(empPojo.getPassword()));
 		System.out.println(emp);
 		empRepo.save(emp);
 
@@ -97,8 +90,6 @@ public class UsersServiceImpl implements UsersService {
 			emp.setId(id);
 			emp.setPassword(empPojo.getPassword());
 			emp.setUsername(empPojo.getUsername());
-
-			// emp.setAddress(empPojo.getAddress());
 
 		}
 		empRepo.save(emp);

@@ -3,7 +3,6 @@ package com.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,70 +11,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.dto.UsersPojo;
 import com.service.UsersService;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 //@RequestMapping("/API/EMPLOYEE/")
 public class ProController {
 
-	@Autowired
-	UsersService empService;
+    @Autowired
+    UsersService empService;
 
-	@PostMapping("/saveEmp")
-	public String saveEmp(@RequestBody UsersPojo empPojo) {
-		empService.saveEmp(empPojo);
-		return "emp saved";
-	}
+    //admin role
+    @PostMapping("/saveEmp")
+    public String saveEmp(@RequestBody UsersPojo empPojo) {
+        empService.saveEmp(empPojo);
+        return "emp saved";
+    }
 
-	@GetMapping("/csrf-token")
-	public CsrfToken getCsrfToken(HttpServletRequest req) {
-		CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
 
-		return token;
-	}
+    //admin role
+    @GetMapping("/welcome")
+    public String welcome(HttpServletRequest req) {
+        return "welcome to spring security" + " " + req.getSession().getId();
+    }
 
-	@GetMapping("/welcome")
-	public String welcome(HttpServletRequest req) {
-		return "welcome to spring security" + " " + req.getSession().getId();
-	}
+    //user role
+    //admin role
+    @GetMapping("/employee/findAllEmp")
+    public List<UsersPojo> fetchEmpList() {
 
-	@GetMapping("/employee/findAllEmp")
-	public List<UsersPojo> fetchEmpList() {
+        List<UsersPojo> op = empService.fetchEmpList();
+        System.out.println("AFTER EXECUTION ");
+        return op;
+    }
 
-		List<UsersPojo> op = empService.fetchEmpList();
-		System.out.println("AFTER EXECUTION ");
-		return op;
-	}
+    // by pathvariable
+    // user role
+    //admin role
+    @GetMapping("/fetchEmpByIdByPV/{id}")
+    public UsersPojo getEmployeeByIdByPV(@PathVariable int id) {
+        UsersPojo op = empService.fetchEmpByIdByPV(id);
+        return op;
+    }
 
-	// by pathvariable
-	@GetMapping("/fetchEmpByIdByPV/{id}")
-	public UsersPojo getEmployeeByIdByPV(@PathVariable int id) {
-		UsersPojo op = empService.fetchEmpByIdByPV(id);
-		return op;
-	}
+    // by request param
+    // user role
+    //admin role
+    @GetMapping("/fetchEmpByIdByRP")
+    public UsersPojo getEmployeeByIdByRP(@RequestParam(value = "userId", defaultValue = "0") int userId) {
+        return empService.fetchEmpByIdByRP(userId);
+    }
 
-	// by request param
-	@GetMapping("/fetchEmpByIdByRP")
-	public UsersPojo getEmployeeByIdByRP(@RequestParam(value = "userId", defaultValue = "0") int userId) {
-		UsersPojo op = empService.fetchEmpByIdByRP(userId);
-		return op;
-	}
+    //admin role
+    @DeleteMapping("deleteEmpById/{id}")
+    public void deleteEmpById(@PathVariable int id) {
+        empService.deleteById(id);
 
-	@DeleteMapping("deleteEmpById/{id}")
-	public void deleteEmpById(@PathVariable int id) {
-		empService.deleteById(id);
+    }
 
-	}
+    //admin role
+    @PutMapping("/updateEmpById/{id}")
+    public String updateEmpById(@RequestBody UsersPojo empPojo, @PathVariable int id) {
+        empService.updateEmpById(empPojo, id);
+        return "employee Details updated";
 
-	@PutMapping("/updateEmpById/{id}")
-	public String updateEmpById(@RequestBody UsersPojo empPojo, @PathVariable int id) {
-		empService.updateEmpById(empPojo, id);
-		return "employee Details updated";
-
-	}
+    }
 
 }
