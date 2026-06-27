@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.config.JwtService;
 import com.dto.AuthRequest;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**

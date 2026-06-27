@@ -1,5 +1,10 @@
 package com.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UserNotFoundException extends RuntimeException {
 
 	private String msg;
@@ -9,14 +14,6 @@ public class UserNotFoundException extends RuntimeException {
 		super(string);
 		this.msg = string;
 
-	}
-
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
 	}
 
 }
