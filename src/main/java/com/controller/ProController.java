@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.dto.UsersPojo;
 import com.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ public class ProController {
     UsersService empService;
 
     //admin role
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/saveEmp")
     public String saveEmp(@RequestBody UsersPojo empPojo) {
         empService.saveEmp(empPojo);
@@ -31,6 +33,7 @@ public class ProController {
 
 
     //admin role
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/welcome")
     public String welcome(HttpServletRequest req) {
         return "welcome to spring security" + " " + req.getSession().getId();
@@ -38,6 +41,7 @@ public class ProController {
 
     //user role
     //admin role
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/employee/findAllEmp")
     public List<UsersPojo> fetchEmpList() {
 
@@ -49,6 +53,7 @@ public class ProController {
     // by pathvariable
     // user role
     //admin role
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/fetchEmpByIdByPV/{id}")
     public UsersPojo getEmployeeByIdByPV(@PathVariable int id) {
         UsersPojo op = empService.fetchEmpByIdByPV(id);
@@ -58,12 +63,14 @@ public class ProController {
     // by request param
     // user role
     //admin role
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/fetchEmpByIdByRP")
     public UsersPojo getEmployeeByIdByRP(@RequestParam(value = "userId", defaultValue = "0") int userId) {
         return empService.fetchEmpByIdByRP(userId);
     }
 
     //admin role
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("deleteEmpById/{id}")
     public void deleteEmpById(@PathVariable int id) {
         empService.deleteById(id);
@@ -71,11 +78,11 @@ public class ProController {
     }
 
     //admin role
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/updateEmpById/{id}")
     public String updateEmpById(@RequestBody UsersPojo empPojo, @PathVariable int id) {
         empService.updateEmpById(empPojo, id);
         return "employee Details updated";
-
     }
 
 }
