@@ -24,12 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Loading user details for username: {}", username);
-        Users user = usersRepo.findByUsername(username);
-        if (user == null) {
+        return usersRepo.findByUsername(username).map(user -> {
+            log.debug("Successfully loaded user details for: {}", username);
+            return new CustomUserDetails(user);
+        }).orElseThrow(() -> {
             log.error("User not found in database: {}", username);
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
-        log.debug("Successfully loaded user details for: {}", username);
-        return new CustomUserDetails(user);
+            return new UsernameNotFoundException("User not found with username: " + username);
+        });
     }
 }

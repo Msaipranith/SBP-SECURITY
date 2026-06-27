@@ -3,6 +3,7 @@ package com.serviceimpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,9 @@ public class UsersServiceImpl implements UsersService {
 	UsersRepo empRepo;
 
 	@Autowired
-	PasswordEncoder passwordEncoder;	@Override
+	PasswordEncoder passwordEncoder;
+	
+	@Override
 	public void saveEmp(UsersPojo empPojo) {
 		log.info("Processing request to save new employee: {}", empPojo.getUsername());
 		Users emp = new Users();
@@ -39,52 +42,42 @@ public class UsersServiceImpl implements UsersService {
 	@Override
 	public List<UsersPojo> fetchEmpList() {
 		log.info("Fetching all employees from database.");
-		// Fetch all Users entities
 		List<Users> op = empRepo.findAll();
 		log.debug("Found {} employees in database.", op.size());
 
-		// Create a list to hold UsersPojo objects
-		List<UsersPojo> empPojoList = new ArrayList<>();
-
-		// Iterate through the Users list and copy properties to UsersPojo objects
-		for (Users users : op) {
-			// Create a new UsersPojo object
+		return op.stream().map(users -> {
 			UsersPojo empPojo = new UsersPojo();
-
-			// Copy properties from Users to UsersPojo
 			BeanUtils.copyProperties(users, empPojo);
-
-			// Add the UsersPojo to the list
-			empPojoList.add(empPojo);
-		}
-
-		// Return the list of UsersPojo objects
-		return empPojoList;
+			return empPojo;
+		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public UsersPojo fetchEmpByIdByPV(int id) {
 		log.info("Fetching employee by PathVariable ID: {}", id);
-		UsersPojo empPojo = new UsersPojo();
-		Users data = empRepo.findById(id).get();
-		BeanUtils.copyProperties(data, empPojo);
-		log.debug("Found employee details for ID: {}", id);
-		return empPojo;
+		return empRepo.findById(id).map(data -> {
+			UsersPojo empPojo = new UsersPojo();
+			BeanUtils.copyProperties(data, empPojo);
+			log.debug("Found employee details for ID: {}", id);
+			return empPojo;
+		}).orElseThrow(() -> {
+			log.error("Employee with ID {} not found", id);
+			return new RuntimeException("Employee not found");
+		});
 	}
 
 	@Override
 	public UsersPojo fetchEmpByIdByRP(int id) {
 		log.info("Fetching employee by RequestParam ID: {}", id);
-		UsersPojo empPojo = new UsersPojo();
-		Optional<Users> dataOptional = empRepo.findById(id);
-		if (dataOptional.isPresent()) {
-			Users data = dataOptional.get();
+		return empRepo.findById(id).map(data -> {
+			UsersPojo empPojo = new UsersPojo();
 			BeanUtils.copyProperties(data, empPojo);
 			log.debug("Found employee details for ID: {}", id);
-		} else {
+			return empPojo;
+		}).orElseGet(() -> {
 			log.warn("Employee with ID {} not found", id);
-		}
-		return empPojo;
+			return new UsersPojo();
+		});
 	}
 
 	@Override
@@ -97,8 +90,7 @@ public class UsersServiceImpl implements UsersService {
 	@Override
 	public void updateEmpById(UsersPojo empPojo, int id) {
 		log.info("Updating employee with ID: {}", id);
-		Users emp = empRepo.findById(id).get();
-		if (emp != null) {
+		empRepo.findById(id).map(emp -> {
 			emp.setId(id);
 			emp.setPassword(passwordEncoder.encode(empPojo.getPassword()));
 			emp.setUsername(empPojo.getUsername());
@@ -106,11 +98,13 @@ public class UsersServiceImpl implements UsersService {
 				emp.setRole(empPojo.getRole());
 			}
 			log.debug("Applied updates for employee ID: {}", id);
-		} else {
+			empRepo.save(emp);
+			log.info("Saved updated employee with ID: {} to database.", id);
+			return emp;
+		}).orElseGet(() -> {
 			log.warn("Employee with ID {} not found for update.", id);
-		}
-		empRepo.save(emp);
-		log.info("Saved updated employee with ID: {} to database.", id);
+			return null;
+		});
 	}
 
 }
