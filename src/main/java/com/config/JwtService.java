@@ -11,7 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for handling all JWT-related cryptographic operations:
+ * Token generation, claims extraction, and validation.
+ */
+@Slf4j
 @Service
 public class JwtService {
 
@@ -23,6 +29,7 @@ public class JwtService {
     }
 
     public String generateToken(String username) {
+        log.info("Generating JWT token for user: {}", username);
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
     }
@@ -64,6 +71,12 @@ public class JwtService {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (isValid) {
+            log.debug("Token for {} is valid.", username);
+        } else {
+            log.warn("Token for {} is invalid or expired.", username);
+        }
+        return isValid;
     }
 }

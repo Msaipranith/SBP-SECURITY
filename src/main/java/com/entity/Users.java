@@ -7,7 +7,12 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Entity representing a User in the database.
+ * Maps to the 'users' table.
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,6 +24,7 @@ public class Users {
 	private int id;
 
 	private String username;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	private String role;
 

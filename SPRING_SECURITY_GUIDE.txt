@@ -1,0 +1,79 @@
+=========================================================
+SPRING SECURITY ARCHITECTURE & IMPLEMENTATION GUIDE
+=========================================================
+
+This document explains the security architecture of this Spring Boot application in a detailed, easy-to-understand way.
+The goal of this project's security setup is to use JSON Web Tokens (JWT) for stateless authentication and authorization, completely securing endpoints based on user roles (Admin vs. User).
+
+---------------------------------------------------------
+1. OVERVIEW OF THE SECURITY FLOW
+---------------------------------------------------------
+When a user interacts with the application, here is what happens:
+1. Registration (Optional): A new user is created and their password is encrypted before saving it to the database.
+2. Login: The user calls `/api/auth/login` with their username and password.
+3. Token Generation: If credentials are valid, the server generates a JWT (JSON Web Token) and returns it.
+4. Subsequent Requests: For any protected endpoint (e.g., `/employee/findAllEmp`), the user must include the JWT in the `Authorization` HTTP header as a `Bearer` token.
+5. Request Interception: The `JwtAuthFilter` intercepts the request, reads the token, validates it, and securely establishes who the user is for that specific request.
+6. Authorization Checking: Method-level security annotations (e.g., `@PreAuthorize`) check if the user has the correct role to perform the action.
+
+---------------------------------------------------------
+2. CORE COMPONENTS
+---------------------------------------------------------
+
+A. SecurityConfig.java
+Location: `src/main/java/com/config/SecurityConfig.java`
+Purpose: This is the central hub for Spring Security.
+- `@EnableWebSecurity`: Tells Spring that this class contains security configurations.
+- `@EnableMethodSecurity`: Enables the use of `@PreAuthorize` on controller methods.
+- `securityFilterChain`: This method defines the "rules of the road":
+    - It disables CSRF (Cross-Site Request Forgery) protection because we are using stateless JWTs (no cookies/sessions to exploit).
+    - It explicitly allows public access to the login endpoint and Swagger documentation without authentication.
+    - It mandates that ALL other requests must be authenticated.
+    - It configures session management to be `STATELESS`, meaning Spring will NOT create HTTP sessions. Every request is isolated.
+    - It registers our custom `JwtAuthFilter` to run BEFORE Spring's default username/password filter.
+
+B. JwtAuthFilter.java
+Location: `src/main/java/com/config/JwtAuthFilter.java`
+Purpose: The gatekeeper for incoming requests.
+- It extends `OncePerRequestFilter`, guaranteeing it executes exactly once per HTTP request.
+- It looks for the `Authorization` header. If it starts with `Bearer `, it extracts the token.
+- It asks the `JwtService` to extract the username and validate the token.
+- If the token is valid and there isn't already a user logged into the SecurityContext, it loads the user's details from the database (via `CustomUserDetailsService`) and creates an `UsernamePasswordAuthenticationToken`.
+- This authentication object is placed in the `SecurityContextHolder`, effectively telling Spring Security: "This user is successfully authenticated for this request."
+
+C. JwtService.java
+Location: `src/main/java/com/config/JwtService.java`
+Purpose: Handles all JWT cryptography.
+- `generateToken(username)`: Creates a token containing the username as the "subject", an issue date, and an expiration date (usually set to a few hours/days), then signs it using a secret key.
+- `extractUsername(token)`: Decrypts the token and pulls out the subject.
+- `validateToken(token, userDetails)`: Ensures the token belongs to the correct user and hasn't expired.
+
+D. CustomUserDetailsService.java & CustomUserDetails.java
+Location: `src/main/java/com/config/CustomUserDetailsService.java`
+Purpose: Bridging the database to Spring Security.
+- Spring Security doesn't know about our `Users` entity. It only understands `UserDetails`.
+- `CustomUserDetailsService` queries the `UsersRepo` to find a user by their username.
+- It then wraps our `Users` entity into a `CustomUserDetails` object.
+- `CustomUserDetails` implements `UserDetails`, providing Spring Security with the username, password, and Authorities (Roles) required to make authorization decisions.
+
+---------------------------------------------------------
+3. HOW AUTHORIZATION (ROLES) WORKS
+---------------------------------------------------------
+Instead of configuring roles centrally in URLs, we use Method-Level Security for fine-grained control.
+
+- In `ProController.java`, you will see annotations like `@PreAuthorize("hasAuthority('ROLE_ADMIN')")`.
+- When a user tries to access the method, Spring Security intercepts the call.
+- It checks the `SecurityContext` (which was populated by our `JwtAuthFilter`).
+- It extracts the user's authorities (e.g., `ROLE_USER`) and compares them to the requirement (`ROLE_ADMIN`).
+- If they match, the method executes. If not, the user gets a 403 Forbidden response.
+
+---------------------------------------------------------
+4. SECURE DATA HANDLING (HIDING PASSWORDS)
+---------------------------------------------------------
+Passwords must never be returned in JSON API responses.
+- In `UsersPojo.java` and `Users.java`, the `password` field is annotated with `@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)`.
+- This allows Jackson (the JSON library) to read passwords from incoming requests (like when creating a new user), but strictly forbids writing passwords out when returning a user to the client.
+
+=========================================================
+END OF GUIDE
+=========================================================
